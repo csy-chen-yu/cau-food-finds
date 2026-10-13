@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f2e9">
+  <title>今天吃点什么？｜农大觅食指南</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f8f5ee;
+      --cream: #f0e6d7;
+      --card: #fffdf8;
+      --ink: #29231f;
+      --muted: #81766d;
+      --line: #e8dfd3;
+      --tomato: #c55035;
+      --tomato-dark: #a83b26;
+      --olive: #66734a;
+      --gold: #e5a83d;
+      --shadow: 0 14px 40px rgb(71 48 30 / 8%);
+      font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--paper); color: var(--ink); }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    .shell { width: min(1180px, calc(100% - 48px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 10; background: rgb(248 245 238 / 94%);
+      border-bottom: 1px solid rgb(232 223 211 / 80%); backdrop-filter: blur(14px);
+    }
+    .nav { min-height: 72px; display: flex; align-items: center; gap: 30px; }
+    .brand { display: flex; align-items: center; gap: 10px; margin-right: auto; font-weight: 900; letter-spacing: -.04em; }
+    .brand-mark { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 13px; background: var(--tomato); color: white; font-size: 21px; }
+    .brand small { display: block; color: var(--muted); font-size: 10px; letter-spacing: .13em; font-weight: 700; margin-top: 2px; }
+    .nav-links { display: flex; align-items: center; gap: 25px; color: #63584f; font-size: 14px; font-weight: 700; }
+    .nav-links a:hover, .nav-links a[aria-current="page"] { color: var(--tomato); }
+    .campus-select, .select {
+      border: 1px solid var(--line); background: var(--card); border-radius: 999px;
+      padding: 10px 14px; color: var(--ink); outline-color: var(--tomato);
+    }
+
+    .app-viewport { height: calc(100dvh - 73px); overflow: hidden; position: relative; touch-action: pan-y; }
+    .screen-track { display: flex; width: 400%; height: 100%; transition: transform .42s cubic-bezier(.22,.75,.25,1); will-change: transform; }
+    .screen { flex: 0 0 25%; width: 25%; height: 100%; overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; scrollbar-width: thin; scrollbar-color: #d8c8b5 transparent; }
+    .screen-indicator { position: fixed; z-index: 9; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; padding: 8px 11px; background: rgb(255 253 248 / 92%); border: 1px solid var(--line); border-radius: 999px; box-shadow: 0 5px 18px rgb(71 48 30 / 10%); backdrop-filter: blur(10px); }
+    .screen-dot { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 999px; background: #d4c7b9; transition: width .2s, background .2s; }
+    .screen-dot[aria-current="page"] { width: 22px; background: var(--tomato); }
+    .screen-hint { color: var(--muted); font-size: 11px; margin-left: 3px; white-space: nowrap; }
+    .hero { padding: 26px 0 32px; }
+    .hero-panel {
+      position: relative; overflow: hidden; min-height: 480px; display: grid; grid-template-columns: 1fr 1fr;
+      border-radius: 28px; background: #f3e7d5; box-shadow: var(--shadow);
+    }
+    .hero-copy { align-self: center; padding: 55px clamp(28px, 6vw, 76px); position: relative; z-index: 1; }
+    .eyebrow { color: var(--tomato); font-size: 12px; letter-spacing: .19em; text-transform: uppercase; font-weight: 900; }
+    h1 { font-size: clamp(44px, 6.3vw, 78px); line-height: .98; letter-spacing: -.075em; margin: 18px 0; max-width: 570px; }
+    h1 span { color: var(--tomato); }
+    .hero-copy p { max-width: 410px; color: #766a5f; font-size: 16px; line-height: 1.9; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+    .button { border: 0; border-radius: 999px; padding: 13px 20px; background: var(--tomato); color: white; font-weight: 800; transition: transform .18s, background .18s; }
+    .button:hover { background: var(--tomato-dark); transform: translateY(-2px); }
+    .button.secondary { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+    .button.secondary:hover { background: #fff; }
+    .hero-image { min-height: 100%; background: #b34425; position: relative; }
+    .hero-image img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; }
+    .hero-image::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgb(49 24 12 / 8%), transparent 42%); pointer-events: none; }
+    .hero-sticker { position: absolute; right: 22px; bottom: 22px; z-index: 1; padding: 12px 16px; color: white; background: rgb(41 35 31 / 70%); border: 1px solid rgb(255 255 255 / 35%); border-radius: 16px; backdrop-filter: blur(8px); font-weight: 800; }
+
+    .section { padding: 25px 0 54px; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 22px; }
+    .section-head h2 { margin: 6px 0 0; font-size: clamp(26px, 3vw, 38px); letter-spacing: -.055em; }
+    .section-head p { color: var(--muted); margin: 8px 0 0; font-size: 14px; }
+    .kicker { font-size: 11px; color: var(--tomato); letter-spacing: .16em; font-weight: 900; }
+    .stats { display: flex; gap: 22px; color: var(--muted); font-size: 12px; }
+    .stats strong { display: block; color: var(--ink); font-size: 20px; margin-bottom: 2px; }
+
+    .dish-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .dish-card { overflow: hidden; border-radius: 19px; background: var(--card); border: 1px solid var(--line); transition: transform .2s, box-shadow .2s; }
+    .dish-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    .dish-photo { width: 100%; height: 205px; object-fit: cover; display: block; background: var(--cream); }
+    .dish-content { padding: 16px 17px 18px; }
+    .dish-topline { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+    .dish-title { margin: 0; font-size: 19px; letter-spacing: -.03em; }
+    .price { color: var(--tomato); font-size: 18px; font-weight: 900; white-space: nowrap; }
+    .dish-place { color: var(--muted); font-size: 12px; margin-top: 6px; }
+    .dish-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; }
+    .rating-line { color: var(--muted); font-size: 12px; }
+    .rating-line strong { color: var(--olive); font-size: 17px; }
+    .tag { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 9px; background: #f3eadc; color: #78654c; font-size: 11px; }
+    .detail-button { border: 0; background: transparent; color: var(--tomato); font-weight: 800; font-size: 13px; padding: 7px 0 7px 8px; }
+
+    .filters { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 0 0 20px; }
+    .search { flex: 1 1 230px; min-width: 180px; position: relative; }
+    .search input { width: 100%; border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 12px 16px 12px 42px; outline-color: var(--tomato); }
+    .search::before { content: "⌕"; position: absolute; left: 16px; top: 6px; color: var(--tomato); font-size: 25px; }
+    .filters .select { font-size: 13px; padding: 11px 14px; }
+    .empty { grid-column: 1/-1; text-align: center; color: var(--muted); padding: 42px 16px; background: var(--card); border: 1px dashed var(--line); border-radius: 18px; }
+
+    .lottery-wrap { display: grid; grid-template-columns: .86fr 1.14fr; overflow: hidden; border-radius: 25px; background: #eae0ce; }
+    .lottery-copy { padding: clamp(24px, 4vw, 48px); }
+    .lottery-copy h2 { font-size: clamp(29px, 4vw, 43px); letter-spacing: -.06em; margin: 8px 0; }
+    .lottery-copy p { line-height: 1.8; color: #74695f; font-size: 14px; }
+    .lottery-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+    .lottery-fields label { display: grid; gap: 7px; color: #74695f; font-size: 12px; font-weight: 700; }
+    .lottery-fields .select, .lottery-fields input { width: 100%; border-radius: 12px; padding: 11px 12px; }
+    .lottery-fields input { border: 1px solid var(--line); background: var(--card); outline-color: var(--tomato); }
+    .lottery-result { background: var(--card); margin: 18px; border-radius: 20px; padding: 22px; display: flex; flex-direction: column; justify-content: center; min-height: 310px; }
+    .lottery-result.is-empty { align-items: center; text-align: center; color: var(--muted); }
+    .result-label { color: var(--tomato); font-size: 11px; letter-spacing: .14em; font-weight: 900; }
+    .result-dish { display: grid; grid-template-columns: 130px 1fr; gap: 17px; align-items: center; }
+    .result-dish img { width: 130px; height: 130px; object-fit: cover; border-radius: 16px; }
+    .result-dish h3 { margin: 8px 0; font-size: 24px; }
+    .result-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+
+    .reviews-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .review-panel { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 22px; }
+    .review-panel h3 { margin: 0 0 16px; font-size: 19px; }
+    .review-item { border-top: 1px solid var(--line); padding: 14px 0; }
+    .review-item:first-child { border-top: 0; padding-top: 0; }
+    .review-meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; gap: 10px; }
+    .review-item p { margin: 8px 0 0; line-height: 1.7; font-size: 14px; }
+    .review-dish { color: var(--tomato); font-weight: 800; }
+    .review-form { display: grid; gap: 12px; }
+    .review-form input, .review-form textarea { width: 100%; border: 1px solid var(--line); background: #fff; border-radius: 12px; padding: 12px; outline-color: var(--tomato); }
+    .review-form textarea { resize: vertical; min-height: 92px; }
+    .review-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .form-note { font-size: 11px; color: var(--muted); margin: 0; }
+
+    .footer { border-top: 1px solid var(--line); padding: 23px 0 35px; color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; gap: 14px; }
+    .toast { position: fixed; z-index: 30; bottom: 24px; left: 50%; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; transition: .22s; background: var(--ink); color: white; border-radius: 999px; padding: 12px 18px; font-size: 13px; box-shadow: var(--shadow); }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    dialog { width: min(560px, calc(100% - 28px)); border: 0; padding: 0; border-radius: 22px; color: var(--ink); background: var(--card); box-shadow: 0 24px 90px rgb(0 0 0 / 25%); }
+    dialog::backdrop { background: rgb(35 28 22 / 52%); backdrop-filter: blur(3px); }
+    .modal-inner { padding: 20px; }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .modal-head h2 { margin: 0; font-size: 23px; }
+    .close-button { width: 36px; height: 36px; border: 0; border-radius: 50%; background: #f1e9de; font-size: 20px; }
+    .modal-photo { width: 100%; max-height: 260px; object-fit: cover; border-radius: 15px; }
+    .modal-rating { display: flex; align-items: center; gap: 10px; margin: 16px 0; color: var(--muted); font-size: 13px; }
+    .stars { display: inline-flex; gap: 2px; direction: ltr; }
+    .star-button { width: 27px; border: 0; padding: 0; font-size: 26px; line-height: 1; color: transparent; background: linear-gradient(90deg, var(--gold) var(--fill), #d8cec1 var(--fill)); background-clip: text; -webkit-background-clip: text; }
+    .modal-reviews { max-height: 170px; overflow: auto; margin-top: 12px; }
+    @media (max-width: 850px) {
+      .nav { gap: 14px; }
+      .nav-links { gap: 14px; }
+      .hero-panel { min-height: 410px; }
+      .dish-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .lottery-wrap { grid-template-columns: 1fr; }
+      .lottery-result { min-height: 250px; margin-top: 0; }
+    }
+    @media (max-width: 620px) {
+      .shell { width: min(100% - 28px, 480px); }
+      .nav { min-height: 62px; flex-wrap: wrap; gap: 10px; padding: 9px 0; }
+      .brand-mark { width: 34px; height: 34px; }
+      .nav-links { order: 3; width: 100%; justify-content: space-between; gap: 8px; font-size: 12px; padding: 3px 0 2px; }
+      .campus-select { padding: 8px 10px; font-size: 12px; }
+      .app-viewport { height: calc(100dvh - 112px); }
+      .hero { padding: 14px 0 26px; }
+      .hero-panel { display: flex; flex-direction: column; border-radius: 21px; }
+      .hero-copy { padding: 30px 24px 25px; }
+      h1 { font-size: clamp(45px, 13vw, 65px); }
+      .hero-copy p { font-size: 14px; }
+      .hero-image { min-height: 245px; }
+      .section { padding: 18px 0 35px; }
+      .section-head { align-items: start; flex-direction: column; gap: 12px; }
+      .stats { gap: 20px; }
+      .dish-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .dish-photo { height: 145px; }
+      .dish-content { padding: 12px; }
+      .dish-title { font-size: 15px; }
+      .price { font-size: 15px; }
+      .dish-place { line-height: 1.5; }
+      .dish-bottom { align-items: start; flex-direction: column; gap: 4px; margin-top: 12px; }
+      .filters { gap: 8px; }
+      .filters .select { flex: 1; min-width: 100px; }
+      .lottery-copy { padding: 25px 20px; }
+      .lottery-fields { grid-template-columns: 1fr 1fr; }
+      .lottery-result { padding: 17px; margin: 0 12px 12px; min-height: 220px; }
+      .result-dish { grid-template-columns: 92px 1fr; gap: 12px; }
+      .result-dish img { width: 92px; height: 92px; }
+      .result-dish h3 { font-size: 19px; }
+      .reviews-layout { grid-template-columns: 1fr; }
+      .footer { flex-direction: column; }
+      .screen-indicator { bottom: 10px; }
+      dialog { max-height: 92vh; overflow: auto; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <nav class="shell nav" aria-label="主导航">
+      <a class="brand" href="#home" aria-label="农大觅食指南首页">
+        <span class="brand-mark">食</span>
+        <span>农大觅食指南<small>CAU FOOD FINDS</small></span>
+      </a>
+      <div class="nav-links">
+        <a href="#featured">今日推荐</a>
+        <a href="#dishes">逛逛菜品</a>
+        <a href="#lottery">帮我决定</a>
+        <a href="#reviews">同学评价</a>
+      </div>
+      <label class="sr-only" for="campusSelect">选择校区</label>
+      <select class="campus-select" id="campusSelect" aria-label="选择校区">
+        <option value="西校区">西校区</option>
+        <option value="东校区">东校区</option>
+      </select>
+    </nav>
+  </header>
+
+  <main class="app-viewport" id="appViewport">
+    <div class="screen-track" id="screenTrack">
+      <section class="screen" id="home" aria-label="今日推荐">
+        <div class="shell hero">
+          <div class="hero-panel">
+            <div class="hero-copy">
+              <div class="eyebrow">GOOD FOOD, GOOD MOOD · 中国农业大学</div>
+              <h1 id="hero-title">今天<br>吃点<span>好的。</span></h1>
+              <p>从食堂窗口到街角小馆，收集农大附近值得一吃的味道。选择困难？把决定交给我们。</p>
+              <div class="hero-actions">
+                <a class="button" href="#lottery">替我选一道 ↗</a>
+                <a class="button secondary" href="#dishes">看看大家在吃什么</a>
+              </div>
+              <p class="form-note" style="margin-top:18px">也可以左右滑动，探索更多页面 →</p>
+            </div>
+            <div class="hero-image">
+              <img src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&amp;fit=crop&amp;w=1100&amp;q=85" alt="色彩丰富的一桌美食" fetchpriority="high">
+              <div class="hero-sticker">今日份好胃口 ✦</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="shell section" id="featured">
+          <div class="section-head">
+            <div>
+              <div class="kicker">CAMPUS FAVORITES</div>
+              <h2>今天的人气选手</h2>
+              <p>从同学们的口碑里，挑几道今天值得试试的。</p>
+            </div>
+            <div class="stats" aria-label="菜品统计">
+              <div><strong id="dishCount">0</strong>道好味道</div>
+              <div><strong id="reviewCount">0</strong>条同学评价</div>
+              <div><strong id="campusLabel">西校区</strong>正在逛</div>
+            </div>
+          </div>
+          <div class="dish-grid" id="featuredGrid"></div>
+        </div>
+      </section>
+
+      <section class="screen" id="dishes" aria-label="逛逛菜品">
+      <div class="shell section">
+      <div class="section-head">
+        <div>
+          <div class="kicker">FIND YOUR NEXT BITE</div>
+          <h2>逛逛菜品</h2>
+          <p>按名字搜索，或用分类和价格找到合胃口的那一口。</p>
+        </div>
+      </div>
+      <div class="filters">
+        <label class="search"><span class="sr-only">搜索菜品或商家</span><input id="searchInput" type="search" placeholder="搜菜名、食堂或商家…" autocomplete="off"></label>
+        <select class="select" id="categoryFilter" aria-label="菜品分类">
+          <option value="">全部分类</option>
+          <option value="主食">主食</option><option value="面食">面食</option>
+          <option value="家常菜">家常菜</option><option value="小吃">小吃</option><option value="轻食">轻食</option>
+        </select>
+        <select class="select" id="priceFilter" aria-label="价格范围">
+          <option value="">全部价格</option><option value="15">¥15以内</option><option value="30">¥15–30</option><option value="31">¥30以上</option>
+        </select>
+        <select class="select" id="sortFilter" aria-label="排序方式">
+          <option value="popular">人气优先</option><option value="rating">评分优先</option><option value="price">价格从低到高</option>
+        </select>
+      </div>
+      <div class="dish-grid" id="dishGrid"></div>
+      </div>
+      </section>
+
+      <section class="screen" id="lottery" aria-label="帮我决定">
+      <div class="shell section">
+      <div class="lottery-wrap">
+        <div class="lottery-copy">
+          <div class="kicker">LET LUNCH CHOOSE YOU</div>
+          <h2>选择困难？<br>让我来抽。</h2>
+          <p>设定预算、口味和菜品类别，从当前校区的选择里抽一个今天的饭搭子。</p>
+          <div class="lottery-fields">
+            <label>预算档位
+              <select class="select" id="budgetSelect">
+                <option value="">不限预算</option><option value="15">¥15以内</option><option value="30">¥15–30</option><option value="31">¥30以上</option><option value="custom">自定义上限</option>
+              </select>
+            </label>
+            <label>自定义上限（元）
+              <input id="customBudget" type="number" min="1" step="1" placeholder="例如 25" inputmode="numeric">
+            </label>
+            <label>想吃什么
+              <select class="select" id="tasteSelect">
+                <option value="">什么都行</option><option value="清淡">清淡</option><option value="香辣">香辣</option><option value="肉食">肉食</option><option value="素食">素食</option>
+              </select>
+            </label>
+            <label>菜品类别
+              <select class="select" id="lotteryCategory">
+                <option value="">不挑类别</option><option value="主食">主食</option><option value="面食">面食</option><option value="家常菜">家常菜</option><option value="小吃">小吃</option><option value="轻食">轻食</option>
+              </select>
+            </label>
+          </div>
+          <button class="button" id="drawButton" type="button">🎲 抽取今天的美食</button>
+        </div>
+        <div class="lottery-result is-empty" id="lotteryResult" aria-live="polite">
+          <div style="font-size:42px">🥢</div>
+          <strong>准备好把选择交给运气了吗？</strong>
+          <span style="font-size:13px;margin-top:8px">设置条件，抽一个今天的美味。</span>
+        </div>
+      </div>
+      </div>
+      </section>
+
+      <section class="screen" id="reviews" aria-label="同学评价">
+      <div class="shell section">
+      <div class="section-head">
+        <div>
+          <div class="kicker">A NOTE FROM A FOODIE</div>
+          <h2>同学吃过，才有发言权</h2>
+          <p>给刚吃过的菜留句话，也看看大家最近在夸什么。</p>
+        </div>
+      </div>
+      <div class="reviews-layout">
+        <div class="review-panel">
+          <h3>最近的饭搭子报告</h3>
+          <div id="recentReviews"></div>
+        </div>
+        <div class="review-panel">
+          <h3>写一条你的评价</h3>
+          <form class="review-form" id="reviewForm">
+            <div class="review-form-row">
+              <label><span class="sr-only">你的昵称（可选）</span><input id="nicknameInput" maxlength="24" placeholder="昵称（可留空）"></label>
+              <label><span class="sr-only">选择要评价的菜品</span><select class="select" id="reviewDishSelect" required></select></label>
+            </div>
+            <label><span class="sr-only">评价内容</span><textarea id="reviewText" maxlength="240" placeholder="味道怎么样？给下一位同学一点参考…" required></textarea></label>
+            <p class="form-note">无需登录。评价会保存在此浏览器中；配置云端服务后，才能与其他设备共享。</p>
+            <button class="button" type="submit">发布评价</button>
+          </form>
+        </div>
+      </div>
+      <footer class="shell footer">
+        <span>农大觅食指南 · 好好吃饭，也是一件正经事。</span>
+        <span>示例菜品仅供页面演示，价格与档口信息请以实际为准。</span>
+      </footer>
+      </div>
+      </section>
+    </div>
+    <nav class="screen-indicator" aria-label="页面切换">
+      <button class="screen-dot" type="button" data-go-screen="home" aria-label="今日推荐" aria-current="page"></button>
+      <button class="screen-dot" type="button" data-go-screen="dishes" aria-label="逛逛菜品"></button>
+      <button class="screen-dot" type="button" data-go-screen="lottery" aria-label="帮我决定"></button>
+      <button class="screen-dot" type="button" data-go-screen="reviews" aria-label="同学评价"></button>
+      <span class="screen-hint">左右滑动切换</span>
+    </nav>
+  </main>
+
+  <dialog id="dishDialog" aria-labelledby="modalTitle">
+    <div class="modal-inner" id="modalContent"></div>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const STORAGE_KEY = "cau-food-finds-v1";
+    const image = (id) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=900&q=80`;
+    const seedDishes = [
+      { id: "tomato-noodles", name: "番茄鸡蛋面", price: 16, rating: 4.7, votes: 38, category: "面食", taste: ["清淡"], campus: "西校区", place: "西区食堂 · 面档", area: "食堂", desc: "酸甜开胃的浓番茄汤底，配一颗滑嫩的煎蛋。", photo: image("photo-1569718212165-3a8278d5f624") },
+      { id: "beef-rice", name: "香煎黑椒牛肉饭", price: 26, rating: 4.8, votes: 52, category: "主食", taste: ["肉食"], campus: "西校区", place: "西区食堂 · 风味档", area: "食堂", desc: "黑椒香气十足，牛肉软嫩，配饭很满足。", photo: image("photo-1546833999-b9f581a1996d") },
+      { id: "mapo-tofu", name: "麻婆豆腐盖饭", price: 18, rating: 4.5, votes: 31, category: "家常菜", taste: ["香辣"], campus: "西校区", place: "西区食堂 · 川味窗口", area: "食堂", desc: "麻辣鲜香的下饭搭档，想吃热乎饭时的稳妥选择。", photo: image("photo-1512058564366-18510be2db19") },
+      { id: "chicken-wrap", name: "香烤鸡肉能量碗", price: 29, rating: 4.6, votes: 24, category: "轻食", taste: ["清淡", "肉食"], campus: "西校区", place: "西区校园 · 轻食铺", area: "校内", desc: "烤鸡肉、时蔬和谷物组合，吃得清爽又有饱足感。", photo: image("photo-1512621776951-a57141f2eefd") },
+      { id: "pork-buns", name: "现煎猪肉锅贴", price: 14, rating: 4.4, votes: 27, category: "小吃", taste: ["肉食"], campus: "西校区", place: "西区食堂 · 早餐档", area: "食堂", desc: "底壳焦脆、内馅鲜香，趁热咬下去最过瘾。", photo: image("photo-1563245372-f21724e3856d") },
+      { id: "chili-fish", name: "青花椒水煮鱼", price: 38, rating: 4.9, votes: 46, category: "家常菜", taste: ["香辣"], campus: "东校区", place: "东区食堂 · 川湘风味", area: "食堂", desc: "鱼片滑嫩，青花椒麻香清亮，适合和朋友一起分享。", photo: image("photo-1547592180-85f173990554") },
+      { id: "eggplant-rice", name: "鱼香茄子盖饭", price: 17, rating: 4.5, votes: 29, category: "主食", taste: ["素食", "香辣"], campus: "东校区", place: "东区食堂 · 家常菜窗口", area: "食堂", desc: "茄子软糯入味，鱼香汁酸甜微辣，配米饭刚刚好。", photo: image("photo-1512058564366-18510be2db19") },
+      { id: "dumplings", name: "手工韭菜鸡蛋饺", price: 22, rating: 4.6, votes: 33, category: "主食", taste: ["素食"], campus: "东校区", place: "东区食堂 · 手工水饺", area: "食堂", desc: "现包水饺皮薄馅足，蘸一点醋就是熟悉的家常味。", photo: image("photo-1563245372-f21724e3856d") },
+      { id: "beijing-noodles", name: "老北京炸酱面", price: 27, rating: 4.7, votes: 41, category: "面食", taste: ["肉食"], campus: "东校区", place: "东区校园周边 · 京味小馆", area: "周边", desc: "酱香浓郁，配齐爽口菜码，喜欢传统面食可以试试。", photo: image("photo-1569718212165-3a8278d5f624") },
+      { id: "veggie-bowl", name: "田园时蔬谷物碗", price: 32, rating: 4.3, votes: 17, category: "轻食", taste: ["清淡", "素食"], campus: "东校区", place: "东区校园周边 · 谷物研究所", area: "周边", desc: "当季蔬菜搭配杂粮和清爽酱汁，给味蕾放个假。", photo: image("photo-1512621776951-a57141f2eefd") },
+      { id: "pancake", name: "加蛋脆皮煎饼", price: 12, rating: 4.5, votes: 36, category: "小吃", taste: ["肉食"], campus: "西校区", place: "西区校园周边 · 街角煎饼", area: "周边", desc: "现摊薄脆煎饼，加蛋加薄脆，赶时间也能吃得香。", photo: image("photo-1565299624946-b28f40a0ae38") },
+      { id: "spicy-chicken", name: "香辣鸡腿拌饭", price: 24, rating: 4.6, votes: 30, category: "主食", taste: ["香辣", "肉食"], campus: "东校区", place: "东区食堂 · 风味窗口", area: "食堂", desc: "鸡腿肉香辣入味，酱汁拌进米饭，每一口都够味。", photo: image("photo-1546833999-b9f581a1996d") }
+    ];
+
+    let stored = loadState();
+    let currentCampus = stored.campus || "西校区";
+    let activeDish = null;
+    let toastTimer;
+    const $ = (id) => document.getElementById(id);
+    const dishesForCampus = () => seedDishes.filter((dish) => dish.campus === currentCampus);
+    const safeText = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
+    const screens = [...document.querySelectorAll(".screen")];
+    let activeScreenIndex = 0;
+
+    function goToScreen(screenId) {
+      const nextIndex = screens.findIndex((screen) => screen.id === screenId);
+      if (nextIndex < 0) return;
+      activeScreenIndex = nextIndex;
+      $("screenTrack").style.transform = `translateX(-${nextIndex * 100 / screens.length}%)`;
+      if (location.hash !== `#${screenId}`) history.replaceState(null, "", `#${screenId}`);
+      screens.forEach((screen, index) => {
+        const isActive = index === nextIndex;
+        screen.setAttribute("aria-hidden", String(!isActive));
+        screen.inert = !isActive;
+      });
+      document.querySelectorAll(".screen-dot").forEach((dot) => {
+        const isActive = dot.dataset.goScreen === screenId;
+        if (isActive) dot.setAttribute("aria-current", "page");
+        else dot.removeAttribute("aria-current");
+      });
+      document.querySelectorAll(".nav-links a").forEach((link) => {
+        const target = document.querySelector(link.getAttribute("href"));
+        const isActive = target && target.closest(".screen") === screens[nextIndex];
+        if (isActive) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
+      });
+    }
+
+    function loadState() {
+      try {
+        const value = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        return {
+          campus: value.campus,
+          ratings: value.ratings && typeof value.ratings === "object" ? value.ratings : {},
+          reviews: Array.isArray(value.reviews) ? value.reviews : []
+        };
+      } catch (error) {
+        console.error("Could not read saved food guide data.", error);
+        return { ratings: {}, reviews: [] };
+      }
+    }
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+        showToast("已自动保存到此浏览器");
+      } catch (error) {
+        console.error("Could not save food guide data.", error);
+        showToast("保存失败，请检查浏览器存储空间");
+      }
+    }
+    function showToast(message) {
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2100);
+    }
+    function getScore(dish) {
+      const personal = stored.ratings[dish.id];
+      if (!personal) return { score: dish.rating, count: dish.votes };
+      return { score: ((dish.rating * dish.votes + personal) / (dish.votes + 1)), count: dish.votes + 1 };
+    }
+    function cardMarkup(dish) {
+      const rating = getScore(dish);
+      return `<article class="dish-card">
+        <img class="dish-photo" src="${dish.photo}" alt="${safeText(dish.name)}" loading="lazy">
+        <div class="dish-content">
+          <div class="dish-topline"><h3 class="dish-title">${safeText(dish.name)}</h3><span class="price">¥${dish.price}</span></div>
+          <div class="dish-place">${safeText(dish.place)}</div>
+          <div class="dish-bottom"><span class="rating-line"><strong>★ ${rating.score.toFixed(1)}</strong> · ${rating.count} 人尝过</span><button class="detail-button" type="button" data-open="${dish.id}">看详情 ↗</button></div>
+          <span class="tag">${safeText(dish.category)} · ${safeText(dish.taste[0])}</span>
+        </div>
+      </article>`;
+    }
+    function render() {
+      const campusDishes = dishesForCampus();
+      const scoreSorted = [...campusDishes].sort((a, b) => getScore(b).score - getScore(a).score);
+      $("featuredGrid").innerHTML = scoreSorted.slice(0, 3).map(cardMarkup).join("");
+      const query = $("searchInput").value.trim().toLowerCase();
+      const category = $("categoryFilter").value;
+      const price = $("priceFilter").value;
+      const sort = $("sortFilter").value;
+      let filtered = campusDishes.filter((dish) => {
+        const matchesQuery = !query || `${dish.name} ${dish.place} ${dish.category}`.toLowerCase().includes(query);
+        const matchesCategory = !category || dish.category === category;
+        const matchesPrice = !price || (price === "15" ? dish.price <= 15 : price === "30" ? dish.price > 15 && dish.price <= 30 : dish.price > 30);
+        return matchesQuery && matchesCategory && matchesPrice;
+      });
+      if (sort === "rating") filtered.sort((a, b) => getScore(b).score - getScore(a).score);
+      if (sort === "price") filtered.sort((a, b) => a.price - b.price);
+      if (sort === "popular") filtered.sort((a, b) => getScore(b).count - getScore(a).count);
+      $("dishGrid").innerHTML = filtered.length ? filtered.map(cardMarkup).join("") : `<div class="empty">没有找到符合条件的菜品，试试调整筛选条件吧。</div>`;
+      $("dishCount").textContent = campusDishes.length;
+      $("campusLabel").textContent = currentCampus;
+      $("reviewCount").textContent = stored.reviews.length;
+      $("reviewDishSelect").innerHTML = campusDishes.map((dish) => `<option value="${dish.id}">${safeText(dish.name)}</option>`).join("");
+      renderReviews();
+    }
+    function renderReviews(dishId) {
+      const reviews = stored.reviews.filter((review) => !dishId || review.dishId === dishId);
+      const target = dishId ? $("modalReviews") : $("recentReviews");
+      if (!target) return;
+      const relevant = dishId ? reviews : reviews.slice().reverse().slice(0, 5);
+      target.innerHTML = relevant.length ? relevant.map((review) => {
+        const dish = seedDishes.find((item) => item.id === review.dishId);
+        return `<div class="review-item"><div class="review-meta"><span>${safeText(review.nickname || "匿名同学")} · <span class="review-dish">${safeText(dish ? dish.name : "菜品")}</span></span><time>${new Date(review.createdAt).toLocaleDateString("zh-CN")}</time></div><p>${safeText(review.text)}</p></div>`;
+      }).join("") : `<p class="form-note">${dishId ? "还没有同学评价，来写第一条吧。" : "还没有同学评价，来分享你的第一口体验吧。"}</p>`;
+    }
+    function openDish(dishId) {
+      const dish = seedDishes.find((item) => item.id === dishId);
+      if (!dish) return;
+      activeDish = dish;
+      const rating = getScore(dish);
+      $("modalContent").innerHTML = `<div class="modal-head"><h2 id="modalTitle">${safeText(dish.name)}</h2><button class="close-button" type="button" data-close aria-label="关闭">×</button></div>
+        <img class="modal-photo" src="${dish.photo}" alt="${safeText(dish.name)}">
+        <p class="dish-place">${safeText(dish.place)} · ¥${dish.price} · ${safeText(dish.category)}</p>
+        <p>${safeText(dish.desc)}</p>
+        <div class="modal-rating"><span>同学评分 <strong>${rating.score.toFixed(1)}</strong> / 5</span><span>给它打分：</span><span class="stars" aria-label="五星评分，可评半星">${[1, 2, 3, 4, 5].map((star) => {
+          const personal = stored.ratings[dish.id] || 0;
+          const fill = personal >= star ? "100%" : personal === star - 0.5 ? "50%" : "0%";
+          return `<button class="star-button" style="--fill:${fill}" type="button" data-rate="${star}" aria-label="${star - 0.5} 到 ${star} 星">★</button>`;
+        }).join("")}</span></div>
+        <div class="modal-reviews" id="modalReviews"></div>`;
+      renderReviews(dish.id);
+      $("dishDialog").showModal();
+    }
+    function drawDish() {
+      let candidates = dishesForCampus();
+      const budget = $("budgetSelect").value;
+      const custom = Number($("customBudget").value);
+      const taste = $("tasteSelect").value;
+      const category = $("lotteryCategory").value;
+      if (budget === "15") candidates = candidates.filter((dish) => dish.price <= 15);
+      else if (budget === "30") candidates = candidates.filter((dish) => dish.price > 15 && dish.price <= 30);
+      else if (budget === "31") candidates = candidates.filter((dish) => dish.price > 30);
+      else if (budget === "custom") {
+        if (!custom || custom < 1) { showToast("请填写有效的自定义预算"); $("customBudget").focus(); return; }
+        candidates = candidates.filter((dish) => dish.price <= custom);
+      }
+      if (taste) candidates = candidates.filter((dish) => dish.taste.includes(taste));
+      if (category) candidates = candidates.filter((dish) => dish.category === category);
+      const result = $("lotteryResult");
+      if (!candidates.length) {
+        result.classList.add("is-empty");
+        result.innerHTML = `<div style="font-size:38px">🤔</div><strong>这个条件下暂时没找到菜</strong><span style="font-size:13px;margin-top:8px">放宽预算或换个口味，再试一次吧。</span>`;
+        return;
+      }
+      const dish = candidates[Math.floor(Math.random() * candidates.length)];
+      result.classList.remove("is-empty");
+      result.innerHTML = `<div class="result-label">今天就吃这个！</div><div class="result-dish"><img src="${dish.photo}" alt="${safeText(dish.name)}"><div><span class="tag">${safeText(dish.campus)} · ${safeText(dish.category)}</span><h3>${safeText(dish.name)}</h3><div class="dish-place">${safeText(dish.place)}</div><div class="rating-line"><strong>★ ${getScore(dish).score.toFixed(1)}</strong> · ¥${dish.price}</div></div></div><div class="result-actions"><button class="button" type="button" data-open="${dish.id}">看看菜品详情</button><button class="button secondary" type="button" id="redrawButton">再抽一次</button></div>`;
+      $("redrawButton").addEventListener("click", drawDish);
+    }
+
+    $("campusSelect").value = currentCampus;
+    $("campusSelect").addEventListener("change", (event) => {
+      currentCampus = event.target.value;
+      stored.campus = currentCampus;
+      saveState();
+      render();
+    });
+    ["searchInput", "categoryFilter", "priceFilter", "sortFilter"].forEach((id) => $(id).addEventListener(id === "searchInput" ? "input" : "change", render));
+    $("drawButton").addEventListener("click", drawDish);
+    $("reviewForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const dishId = $("reviewDishSelect").value;
+      const text = $("reviewText").value.trim();
+      if (!text) { showToast("请先写下你的评价"); return; }
+      stored.reviews.push({ dishId, nickname: $("nicknameInput").value.trim(), text, createdAt: new Date().toISOString() });
+      saveState();
+      $("reviewText").value = "";
+      render();
+      showToast("评价已发布并保存");
+    });
+    document.addEventListener("click", (event) => {
+      const openButton = event.target.closest("[data-open]");
+      if (openButton) openDish(openButton.dataset.open);
+      if (event.target.closest("[data-close]")) $("dishDialog").close();
+      const rateButton = event.target.closest("[data-rate]");
+      if (rateButton && activeDish) {
+        const bounds = rateButton.getBoundingClientRect();
+        const value = Number(rateButton.dataset.rate) - (event.clientX < bounds.left + bounds.width / 2 ? 0.5 : 0);
+        stored.ratings[activeDish.id] = value;
+        saveState();
+        openDish(activeDish.id);
+        render();
+        showToast("评分已保存，可以再次修改");
+      }
+    });
+    $("dishDialog").addEventListener("click", (event) => {
+      if (event.target === $("dishDialog")) $("dishDialog").close();
+    });
+    document.addEventListener("click", (event) => {
+      const dot = event.target.closest("[data-go-screen]");
+      if (dot) goToScreen(dot.dataset.goScreen);
+      const link = event.target.closest('a[href^="#"]');
+      if (link) {
+        const target = document.querySelector(link.getAttribute("href"));
+        const targetScreen = target && target.closest(".screen");
+        if (targetScreen) {
+          event.preventDefault();
+          goToScreen(targetScreen.id);
+          if (target !== targetScreen) {
+            requestAnimationFrame(() => {
+              const top = target.getBoundingClientRect().top - targetScreen.getBoundingClientRect().top + targetScreen.scrollTop;
+              targetScreen.scrollTo({ top, behavior: "smooth" });
+            });
+          }
+        }
+      }
+    });
+    let touchStart = null;
+    $("appViewport").addEventListener("touchstart", (event) => {
+      const touch = event.changedTouches[0];
+      touchStart = { x: touch.clientX, y: touch.clientY, target: event.target };
+    }, { passive: true });
+    $("appViewport").addEventListener("touchend", (event) => {
+      if (!touchStart) return;
+      const touch = event.changedTouches[0];
+      const deltaX = touch.clientX - touchStart.x;
+      const deltaY = touch.clientY - touchStart.y;
+      const startedOnControl = touchStart.target.closest("a, button, input, select, textarea");
+      if (!startedOnControl && Math.abs(deltaX) > 65 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
+        const nextIndex = Math.min(screens.length - 1, Math.max(0, activeScreenIndex + (deltaX < 0 ? 1 : -1)));
+        goToScreen(screens[nextIndex].id);
+      }
+      touchStart = null;
+    }, { passive: true });
+    $("appViewport").addEventListener("touchcancel", () => { touchStart = null; }, { passive: true });
+    document.addEventListener("keydown", (event) => {
+      if (event.target.matches("input, textarea, select, [contenteditable='true']") || $("dishDialog").open) return;
+      if (event.key === "ArrowRight") goToScreen(screens[Math.min(screens.length - 1, activeScreenIndex + 1)].id);
+      if (event.key === "ArrowLeft") goToScreen(screens[Math.max(0, activeScreenIndex - 1)].id);
+    });
+    const initialTarget = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    goToScreen(initialTarget && initialTarget.closest(".screen") ? initialTarget.closest(".screen").id : "home");
+    render();
+  </script>
+</body>
+</html>

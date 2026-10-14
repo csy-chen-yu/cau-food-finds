@@ -88,12 +88,16 @@
     .dish-content { padding: 16px 17px 18px; }
     .dish-topline { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
     .dish-title { margin: 0; font-size: 19px; letter-spacing: -.03em; }
-    .price { color: var(--tomato); font-size: 18px; font-weight: 900; white-space: nowrap; }
+    .price { color: var(--tomato); font-size: 16px; font-weight: 900; white-space: nowrap; text-align: right; }
     .dish-place { color: var(--muted); font-size: 12px; margin-top: 6px; }
     .dish-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; }
     .rating-line { color: var(--muted); font-size: 12px; }
     .rating-line strong { color: var(--olive); font-size: 17px; }
     .tag { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 9px; background: #f3eadc; color: #78654c; font-size: 11px; }
+    .data-notice { margin: 0 0 18px; padding: 14px 16px; border: 1px solid #ecd5b6; border-radius: 14px; color: #705d48; background: #fbf0df; font-size: 13px; line-height: 1.7; }
+    .sample-badge { display: inline-flex; margin-top: 10px; border-radius: 999px; padding: 4px 8px; color: #805d32; background: #f5e9d4; font-size: 10px; font-weight: 800; }
+    .source-line { margin-top: 8px; color: var(--muted); font-size: 11px; line-height: 1.55; }
+    .price-note { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; font-weight: 500; }
     .detail-button { border: 0; background: transparent; color: var(--tomato); font-weight: 800; font-size: 13px; padding: 7px 0 7px 8px; }
 
     .filters { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 0 0 20px; }
@@ -118,6 +122,15 @@
     .result-dish img { width: 130px; height: 130px; object-fit: cover; border-radius: 16px; }
     .result-dish h3 { margin: 8px 0; font-size: 24px; }
     .result-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .result-status { min-height: 19px; margin-top: 10px; color: var(--olive); font-size: 13px; font-weight: 800; }
+    .calorie-card { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding: 13px 15px; border: 1px solid #ecd5b6; border-radius: 14px; background: #fbf0df; }
+    .calorie-icon { font-size: 24px; }
+    .calorie-card strong { display: block; color: var(--tomato); font-size: 18px; }
+    .calorie-card span { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .metric-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+    .metric-card { padding: 13px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+    .metric-card strong { display: block; color: var(--tomato); font-size: 21px; }
+    .metric-card span { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; }
 
     .reviews-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
     .review-panel { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 22px; }
@@ -132,6 +145,8 @@
     .review-form textarea { resize: vertical; min-height: 92px; }
     .review-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .form-note { font-size: 11px; color: var(--muted); margin: 0; }
+    .feedback-list { max-height: 190px; overflow: auto; }
+    .feedback-list .review-item { font-size: 13px; }
 
     .footer { border-top: 1px solid var(--line); padding: 23px 0 35px; color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; gap: 14px; }
     .toast { position: fixed; z-index: 30; bottom: 24px; left: 50%; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; transition: .22s; background: var(--ink); color: white; border-radius: 999px; padding: 12px 18px; font-size: 13px; box-shadow: var(--shadow); }
@@ -183,6 +198,7 @@
       .lottery-copy { padding: 25px 20px; }
       .lottery-fields { grid-template-columns: 1fr 1fr; }
       .lottery-result { padding: 17px; margin: 0 12px 12px; min-height: 220px; }
+      .metric-grid { grid-template-columns: repeat(2, 1fr); }
       .result-dish { grid-template-columns: 92px 1fr; gap: 12px; }
       .result-dish img { width: 92px; height: 92px; }
       .result-dish h3 { font-size: 19px; }
@@ -243,8 +259,8 @@
           <div class="section-head">
             <div>
               <div class="kicker">CAMPUS FAVORITES</div>
-              <h2>今天的人气选手</h2>
-              <p>从同学们的口碑里，挑几道今天值得试试的。</p>
+              <h2>今日觅食灵感</h2>
+              <p>已录入同学提供的菜单与价格；卡路里为常见单人份粗略区间。</p>
             </div>
             <div class="stats" aria-label="菜品统计">
               <div><strong id="dishCount">0</strong>道好味道</div>
@@ -265,12 +281,14 @@
           <p>按名字搜索，或用分类和价格找到合胃口的那一口。</p>
         </div>
       </div>
+      <div class="data-notice"><strong>数据来源：同学提供的中国农业大学食堂价格清单，尚未独立核实。</strong> 标注“约”的价格按区间上限做预算筛选；按斤、按两计价以及人均参考价不参与单份预算抽取。校区未注明、价格待补或供应待确认的条目也不会进入抽取。页面照片为菜品氛围图，不一定是对应实物。校外人员在适用的校内食堂移动支付可能另加约20%搭伙费，实际收费请向食堂核实；公一、公二楼层及合作档口信息未标明，校外预算估算仅供参考。卡路里是按菜品类别与常见单人份给出的粗略估算，不是实测营养信息；配方和分量不同会产生较大差异。</div>
       <div class="filters">
         <label class="search"><span class="sr-only">搜索菜品或商家</span><input id="searchInput" type="search" placeholder="搜菜名、食堂或商家…" autocomplete="off"></label>
         <select class="select" id="categoryFilter" aria-label="菜品分类">
           <option value="">全部分类</option>
           <option value="主食">主食</option><option value="面食">面食</option>
           <option value="家常菜">家常菜</option><option value="小吃">小吃</option><option value="轻食">轻食</option>
+          <option value="饮品甜品">饮品甜品</option><option value="火锅麻辣烫">火锅麻辣烫</option><option value="套餐">套餐</option>
         </select>
         <select class="select" id="priceFilter" aria-label="价格范围">
           <option value="">全部价格</option><option value="15">¥15以内</option><option value="30">¥15–30</option><option value="31">¥30以上</option>
@@ -280,6 +298,14 @@
         </select>
       </div>
       <div class="dish-grid" id="dishGrid"></div>
+      <div class="section-head" style="margin-top:30px">
+        <div>
+          <div class="kicker">CAMPUS TO BE CONFIRMED</div>
+          <h2>校区待确认的参考信息</h2>
+          <p>来源没有标明具体校区的条目只作参考展示，不会混入当前校区抽取。</p>
+        </div>
+      </div>
+      <div class="dish-grid" id="unassignedGrid"></div>
       </div>
       </section>
 
@@ -289,8 +315,14 @@
         <div class="lottery-copy">
           <div class="kicker">LET LUNCH CHOOSE YOU</div>
           <h2>选择困难？<br>让我来抽。</h2>
-          <p>设定预算、口味和菜品类别，从当前校区的选择里抽一个今天的饭搭子。</p>
+          <p>只从当前校区、单份价格可比较的清单条目中抽取。标“约”的价格按最高值控制预算；校区未注明、计重和人均参考价不参与。清单尚未实地复核，供应状态请以食堂为准。</p>
           <div class="lottery-fields">
+            <label>支付身份
+              <select class="select" id="dinerType">
+                <option value="campus">校内人员/校园卡价</option>
+                <option value="visitor">校外人员（食堂暂按约+20%估算）</option>
+              </select>
+            </label>
             <label>预算档位
               <select class="select" id="budgetSelect">
                 <option value="">不限预算</option><option value="15">¥15以内</option><option value="30">¥15–30</option><option value="31">¥30以上</option><option value="custom">自定义上限</option>
@@ -306,10 +338,11 @@
             </label>
             <label>菜品类别
               <select class="select" id="lotteryCategory">
-                <option value="">不挑类别</option><option value="主食">主食</option><option value="面食">面食</option><option value="家常菜">家常菜</option><option value="小吃">小吃</option><option value="轻食">轻食</option>
+                <option value="">不挑类别</option><option value="主食">主食</option><option value="面食">面食</option><option value="家常菜">家常菜</option><option value="小吃">小吃</option><option value="轻食">轻食</option><option value="饮品甜品">饮品甜品</option><option value="火锅麻辣烫">火锅麻辣烫</option><option value="套餐">套餐</option>
               </select>
             </label>
           </div>
+          <p class="form-note" id="budgetRuleNote">“约”价按区间上限筛选；计重价、人均价和未知价不参与按份预算抽取。校外+20%为保守估算，档口适用范围未核实，收费规则请现场确认。</p>
           <button class="button" id="drawButton" type="button">🎲 抽取今天的美食</button>
         </div>
         <div class="lottery-result is-empty" id="lotteryResult" aria-live="polite">
@@ -317,6 +350,17 @@
           <strong>准备好把选择交给运气了吗？</strong>
           <span style="font-size:13px;margin-top:8px">设置条件，抽一个今天的美味。</span>
         </div>
+      </div>
+      <div class="review-panel" style="margin-top:16px">
+        <h3>推荐效果（仅本浏览器统计）</h3>
+        <div class="metric-grid" aria-live="polite">
+          <div class="metric-card"><strong id="drawMetric">0</strong><span>成功推荐</span></div>
+          <div class="metric-card"><strong id="acceptMetric">0</strong><span>接受推荐</span></div>
+          <div class="metric-card"><strong id="rerollMetric">0</strong><span>点击换一个</span></div>
+          <div class="metric-card"><strong id="acceptRateMetric">—</strong><span>接受率（接受 / 推荐）</span></div>
+          <div class="metric-card"><strong id="activeDayMetric">0</strong><span>本机使用天数</span></div>
+        </div>
+        <p class="form-note" style="margin-top:10px">这是本机浏览器的试用计数，不会上传或代表全体农大学子的使用情况。正式验证需接入共享数据并邀请真实同学测试。</p>
       </div>
       </div>
       </section>
@@ -332,25 +376,51 @@
       </div>
       <div class="reviews-layout">
         <div class="review-panel">
-          <h3>最近的饭搭子报告</h3>
+          <h3>本机试吃记录</h3>
           <div id="recentReviews"></div>
         </div>
         <div class="review-panel">
-          <h3>写一条你的评价</h3>
+          <h3>记录一条试吃评价</h3>
           <form class="review-form" id="reviewForm">
             <div class="review-form-row">
               <label><span class="sr-only">你的昵称（可选）</span><input id="nicknameInput" maxlength="24" placeholder="昵称（可留空）"></label>
               <label><span class="sr-only">选择要评价的菜品</span><select class="select" id="reviewDishSelect" required></select></label>
             </div>
             <label><span class="sr-only">评价内容</span><textarea id="reviewText" maxlength="240" placeholder="味道怎么样？给下一位同学一点参考…" required></textarea></label>
-            <p class="form-note">无需登录。评价会保存在此浏览器中；配置云端服务后，才能与其他设备共享。</p>
+            <p class="form-note">无需登录。评价会保存在此浏览器中；当前评分是个人本机记录，不是共享口碑。</p>
             <button class="button" type="submit">发布评价</button>
           </form>
         </div>
       </div>
+      <div class="reviews-layout" style="margin-top:18px">
+        <div class="review-panel">
+          <h3>报告餐食信息问题</h3>
+          <form class="review-form" id="feedbackForm">
+            <label>对应菜品
+              <select class="select" id="feedbackDishSelect" required></select>
+            </label>
+            <label>问题类型
+              <select class="select" id="feedbackType" required>
+                <option value="价格不准确">价格不准确</option>
+                <option value="菜品/档口已下架">菜品或档口已下架</option>
+                <option value="位置或校区有误">位置或校区有误</option>
+                <option value="抽取结果不合适">抽取结果不合适</option>
+                <option value="其他信息错误">其他信息错误</option>
+              </select>
+            </label>
+            <label><span class="sr-only">补充说明</span><textarea id="feedbackDetail" maxlength="240" placeholder="可补充正确价格、档口或不满意原因…" required></textarea></label>
+            <button class="button secondary" type="submit">提交信息反馈</button>
+            <p class="form-note">目前只保存在你当前的浏览器，维护者不会自动收到；接入后端之前请勿填写个人联系方式。</p>
+          </form>
+        </div>
+        <div class="review-panel">
+          <h3>本机已记录的问题</h3>
+          <div class="feedback-list" id="feedbackList"></div>
+        </div>
+      </div>
       <footer class="shell footer">
         <span>农大觅食指南 · 好好吃饭，也是一件正经事。</span>
-        <span>示例菜品仅供页面演示，价格与档口信息请以实际为准。</span>
+        <span>示例资料尚未核实 · 当前反馈及评分只保存在本机浏览器。</span>
       </footer>
       </div>
       </section>
@@ -372,27 +442,107 @@
   <script>
     const STORAGE_KEY = "cau-food-finds-v1";
     const image = (id) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=900&q=80`;
+    const DATA_SOURCE = "用户提供的中国农业大学食堂价格清单（待实地复核）";
+    function makeDish(id, name, campus, canteen, priceMin, priceMax, unit, priceType, category, taste, photoId, options = {}) {
+      const budgetable = options.budgetable ?? (Number.isFinite(priceMax) && ["fixed", "approx", "cap"].includes(priceType));
+      return {
+        id, name, campus, canteen, priceMin, priceMax, priceUnit: unit, priceType,
+        budgetMax: budgetable ? priceMax : null, budgetable, category, taste,
+        place: `${canteen}${options.location ? ` · ${options.location}` : ""}`,
+        area: options.area || "食堂", desc: options.desc || `${canteen}清单收录，具体供应与价格请现场核实。`,
+        photo: image(photoId), rating: null, votes: 0, dataStatus: "用户提供·待复核",
+        source: options.source || DATA_SOURCE, verifiedAt: null, availability: "供应状态待确认",
+        visitorFee: options.visitorFee ?? true, note: options.note || "", calories: options.calories || null
+      };
+    }
     const seedDishes = [
-      { id: "tomato-noodles", name: "番茄鸡蛋面", price: 16, rating: 4.7, votes: 38, category: "面食", taste: ["清淡"], campus: "西校区", place: "西区食堂 · 面档", area: "食堂", desc: "酸甜开胃的浓番茄汤底，配一颗滑嫩的煎蛋。", photo: image("photo-1569718212165-3a8278d5f624") },
-      { id: "beef-rice", name: "香煎黑椒牛肉饭", price: 26, rating: 4.8, votes: 52, category: "主食", taste: ["肉食"], campus: "西校区", place: "西区食堂 · 风味档", area: "食堂", desc: "黑椒香气十足，牛肉软嫩，配饭很满足。", photo: image("photo-1546833999-b9f581a1996d") },
-      { id: "mapo-tofu", name: "麻婆豆腐盖饭", price: 18, rating: 4.5, votes: 31, category: "家常菜", taste: ["香辣"], campus: "西校区", place: "西区食堂 · 川味窗口", area: "食堂", desc: "麻辣鲜香的下饭搭档，想吃热乎饭时的稳妥选择。", photo: image("photo-1512058564366-18510be2db19") },
-      { id: "chicken-wrap", name: "香烤鸡肉能量碗", price: 29, rating: 4.6, votes: 24, category: "轻食", taste: ["清淡", "肉食"], campus: "西校区", place: "西区校园 · 轻食铺", area: "校内", desc: "烤鸡肉、时蔬和谷物组合，吃得清爽又有饱足感。", photo: image("photo-1512621776951-a57141f2eefd") },
-      { id: "pork-buns", name: "现煎猪肉锅贴", price: 14, rating: 4.4, votes: 27, category: "小吃", taste: ["肉食"], campus: "西校区", place: "西区食堂 · 早餐档", area: "食堂", desc: "底壳焦脆、内馅鲜香，趁热咬下去最过瘾。", photo: image("photo-1563245372-f21724e3856d") },
-      { id: "chili-fish", name: "青花椒水煮鱼", price: 38, rating: 4.9, votes: 46, category: "家常菜", taste: ["香辣"], campus: "东校区", place: "东区食堂 · 川湘风味", area: "食堂", desc: "鱼片滑嫩，青花椒麻香清亮，适合和朋友一起分享。", photo: image("photo-1547592180-85f173990554") },
-      { id: "eggplant-rice", name: "鱼香茄子盖饭", price: 17, rating: 4.5, votes: 29, category: "主食", taste: ["素食", "香辣"], campus: "东校区", place: "东区食堂 · 家常菜窗口", area: "食堂", desc: "茄子软糯入味，鱼香汁酸甜微辣，配米饭刚刚好。", photo: image("photo-1512058564366-18510be2db19") },
-      { id: "dumplings", name: "手工韭菜鸡蛋饺", price: 22, rating: 4.6, votes: 33, category: "主食", taste: ["素食"], campus: "东校区", place: "东区食堂 · 手工水饺", area: "食堂", desc: "现包水饺皮薄馅足，蘸一点醋就是熟悉的家常味。", photo: image("photo-1563245372-f21724e3856d") },
-      { id: "beijing-noodles", name: "老北京炸酱面", price: 27, rating: 4.7, votes: 41, category: "面食", taste: ["肉食"], campus: "东校区", place: "东区校园周边 · 京味小馆", area: "周边", desc: "酱香浓郁，配齐爽口菜码，喜欢传统面食可以试试。", photo: image("photo-1569718212165-3a8278d5f624") },
-      { id: "veggie-bowl", name: "田园时蔬谷物碗", price: 32, rating: 4.3, votes: 17, category: "轻食", taste: ["清淡", "素食"], campus: "东校区", place: "东区校园周边 · 谷物研究所", area: "周边", desc: "当季蔬菜搭配杂粮和清爽酱汁，给味蕾放个假。", photo: image("photo-1512621776951-a57141f2eefd") },
-      { id: "pancake", name: "加蛋脆皮煎饼", price: 12, rating: 4.5, votes: 36, category: "小吃", taste: ["肉食"], campus: "西校区", place: "西区校园周边 · 街角煎饼", area: "周边", desc: "现摊薄脆煎饼，加蛋加薄脆，赶时间也能吃得香。", photo: image("photo-1565299624946-b28f40a0ae38") },
-      { id: "spicy-chicken", name: "香辣鸡腿拌饭", price: 24, rating: 4.6, votes: 30, category: "主食", taste: ["香辣", "肉食"], campus: "东校区", place: "东区食堂 · 风味窗口", area: "食堂", desc: "鸡腿肉香辣入味，酱汁拌进米饭，每一口都够味。", photo: image("photo-1546833999-b9f581a1996d") }
+      makeDish("e-gongyi-squirrel-fish","松鼠鱼","东校区","公寓一食堂（公一）",6,10,"/份","approx","家常菜",["肉食"],"photo-1547592180-85f173990554"),
+      makeDish("e-gongyi-malatang","麻辣烫","东校区","公寓一食堂（公一）",8,12,"/份","approx","火锅麻辣烫",["香辣"],"photo-1547592180-85f173990554"),
+      makeDish("e-gongyi-roudanbao","肉蛋堡","东校区","公寓一食堂（公一）",4,6,"/个","approx","小吃",["肉食"],"photo-1565299624946-b28f40a0ae38"),
+      makeDish("e-gongyi-yingyang","营养餐","东校区","公寓一食堂（公一）",5,8,"/份","approx","套餐",["清淡"],"photo-1546833999-b9f581a1996d"),
+      makeDish("e-gongyi-difei","低脂餐","东校区","公寓一食堂（公一）",6,10,"/份","approx","轻食",["清淡"],"photo-1512621776951-a57141f2eefd"),
+      makeDish("e-gonger-zhajiang","炸酱面","东校区","公寓二食堂（公二）",4,4,"/碗","fixed","面食",["肉食"],"photo-1569718212165-3a8278d5f624"),
+      makeDish("e-gonger-litang","小吊梨汤","东校区","公寓二食堂（公二）",5.5,5.5,"/杯","fixed","饮品甜品",["清淡"],"photo-1544145945-f90425340c7e"),
+      makeDish("e-gonger-roastduck","北京烤鸭套餐","东校区","公寓二食堂（公二）",22,22,"/份","fixed","套餐",["肉食"],"photo-1546833999-b9f581a1996d"),
+      makeDish("e-gonger-fotiaoqiang","佛跳墙","东校区","公寓二食堂（公二）",28,28,"/盅","fixed","家常菜",["肉食"],"photo-1547592180-85f173990554"),
+      makeDish("e-gonger-coconutchicken","椰子鸡火锅","东校区","公寓二食堂（公二）",158,158,"/锅","fixed","火锅麻辣烫",["清淡","肉食"],"photo-1547592180-85f173990554"),
+      makeDish("e-gonger-selfselect","自选餐","东校区","公寓二食堂（公二）",19.8,19.8,"/斤","weight","套餐",[], "photo-1546833999-b9f581a1996d",{budgetable:false,note:"按重量计价，份量和总价因人而异，不参与预算抽取。"}),
+      makeDish("e-gonger-casseroletofu","砂锅豆腐","东校区","公寓二食堂（公二）",8.8,8.8,"/份","fixed","家常菜",["素食"],"photo-1512058564366-18510be2db19"),
+      makeDish("e-gonger-hotpot-base","小火锅锅底","东校区","公寓二食堂（公二）",7,7,"/个","fixed","火锅麻辣烫",["香辣"],"photo-1547592180-85f173990554",{note:"仅锅底价；实际就餐总价还需加配菜，不参与预算抽取。",budgetable:false}),
+      makeDish("e-gonger-veggie-buffet","蔬菜自助","东校区","公寓二食堂（公二）",15,15,"/位","fixed","火锅麻辣烫",["素食"],"photo-1512621776951-a57141f2eefd"),
+      makeDish("e-gonger-diy","健康自选DIY","东校区","公寓二食堂（公二）",null,30,"/盘","cap","轻食",["清淡"],"photo-1512621776951-a57141f2eefd",{note:"清单标注不超过30元；按30元上限筛选预算。"}),
+      makeDish("e-gongsan-lurou","卤肉饭","东校区","公寓三食堂（公三）",10,12,"/份","approx","主食",["肉食"],"photo-1546833999-b9f581a1996d"),
+      makeDish("e-gongsan-drypot","干锅","东校区","公寓三食堂（公三）",10,15,"/份","approx","家常菜",["香辣","肉食"],"photo-1547592180-85f173990554"),
+      makeDish("e-gongsan-muttonsoup","羊汤","东校区","公寓三食堂（公三）",8,10,"/碗","approx","家常菜",["清淡","肉食"],"photo-1547592180-85f173990554"),
+      makeDish("e-gongsi-soyicecream","大豆冰淇淋","东校区","公寓四食堂（研一）",6,6,"/份","approx","饮品甜品",["素食"],"photo-1501446529957-6226bd447c46"),
+      makeDish("e-gongsi-lobsterrice","小龙虾饭","东校区","公寓四食堂（研一）",15,20,"/份","approx","主食",["香辣","肉食"],"photo-1546833999-b9f581a1996d"),
+      makeDish("e-gongsi-seacucumber","海肠捞饭","东校区","公寓四食堂（研一）",15,20,"/份","approx","主食",["肉食"],"photo-1546833999-b9f581a1996d"),
+      makeDish("e-flavor-mala-pot","麻辣香锅","东校区","风味餐厅（研二）",40,40,"/份","reference","火锅麻辣烫",["香辣"],"photo-1547592180-85f173990554",{note:"清单约列40元/份、参考实际消费；不作为预算抽取的可靠上限。",budgetable:false}),
+      makeDish("e-flavor-icedtea","冰激凌红茶","东校区","风味餐厅（研二）",15,15,"/杯","fixed","饮品甜品",["清淡"],"photo-1544145945-f90425340c7e"),
+      makeDish("e-flavor-soyicecream","农大冰激凌","东校区","风味餐厅（研二）",6.1,6.1,"/根","fixed","饮品甜品",["素食"],"photo-1501446529957-6226bd447c46"),
+      makeDish("e-flavor-eggrice","滑蛋饭","东校区","风味餐厅（研二）",10,12,"/份","approx","主食",["清淡"],"photo-1546833999-b9f581a1996d"),
+      makeDish("e-flavor-daolamian","打卤面","东校区","风味餐厅（研二）",8,10,"/碗","approx","面食",["肉食"],"photo-1569718212165-3a8278d5f624"),
+      makeDish("e-minzu-handrice","手抓饭","东校区","民族风味食堂",10,15,"/份","approx","主食",["肉食"],"photo-1546833999-b9f581a1996d"),
+      makeDish("e-minzu-pepperchicken","椒麻鸡","东校区","民族风味食堂",12,18,"/份","approx","家常菜",["香辣","肉食"],"photo-1547592180-85f173990554"),
+      makeDish("e-minzu-beefnoodle","牛肉面","东校区","民族风味食堂",8,10,"/碗","approx","面食",["肉食"],"photo-1569718212165-3a8278d5f624"),
+      makeDish("e-minzu-bakedbun","烤包子","东校区","民族风味食堂",3,5,"/个","approx","小吃",["肉食"],"photo-1565299624946-b28f40a0ae38"),
+      makeDish("e-bakery-tart","农大校庆蛋挞","东校区","面包房/甜品区",9.9,9.9,"/个","fixed","饮品甜品",["素食"],"photo-1486427944299-d1955d23e34d"),
+      makeDish("e-bakery-potato","现炸土豆","东校区","面包房/甜品区",7,7,"/份","fixed","小吃",["香辣","素食"],"photo-1512621776951-a57141f2eefd"),
+      makeDish("w-yiyuan-cabbagemutton","白菜炖羊肉","西校区","颐园一食堂（颐一）",2.5,2.5,"/份","fixed","家常菜",["肉食"],"photo-1547592180-85f173990554"),
+      makeDish("w-yiyuan-broccoli","西兰花炒火腿","西校区","颐园一食堂（颐一）",2.5,2.5,"/份","fixed","家常菜",["肉食"],"photo-1512621776951-a57141f2eefd"),
+      makeDish("w-yiyuan-pork","小炒肉","西校区","颐园一食堂（颐一）",3.5,3.5,"/份","fixed","家常菜",["香辣","肉食"],"photo-1547592180-85f173990554"),
+      makeDish("w-yiyuan-chicken","山药炖仔鸡","西校区","颐园一食堂（颐一）",4,4,"/份","fixed","家常菜",["清淡","肉食"],"photo-1547592180-85f173990554"),
+      makeDish("w-yiyuan-fish","番茄花花鱼","西校区","颐园一食堂（颐一）",4,4,"/份","fixed","家常菜",["清淡","肉食"],"photo-1547592180-85f173990554"),
+      makeDish("w-yiyuan-tofu","小炒千页豆腐","西校区","颐园一食堂（颐一）",2.5,2.5,"/份","fixed","家常菜",["素食"],"photo-1512058564366-18510be2db19"),
+      makeDish("w-yiyuan-chickenneck","香辣鸡脖子","西校区","颐园一食堂（颐一）",3.5,3.5,"/份","fixed","小吃",["香辣","肉食"],"photo-1547592180-85f173990554"),
+      makeDish("w-yiyuan-fishcake","风味鱼豆腐","西校区","颐园一食堂（颐一）",3,3,"/份","fixed","小吃",["香辣"],"photo-1547592180-85f173990554"),
+      makeDish("w-yiyuaner-spinachnoodle","鸡蛋菠菜火锅面","西校区","颐园二食堂（颐二）",10,10,"/份","fixed","面食",["清淡"],"photo-1569718212165-3a8278d5f624"),
+      makeDish("w-yiyuaner-dumplings","猪肉白菜水饺","西校区","颐园二食堂（颐二）",12,12,"/份","fixed","主食",["肉食"],"photo-1563245372-f21724e3856d"),
+      makeDish("w-yiyuaner-meat-rice","梅菜扣肉盖饭","西校区","颐园二食堂（颐二）",15,15,"/份","fixed","主食",["肉食"],"photo-1546833999-b9f581a1996d"),
+      makeDish("w-yiyuaner-douhua-rice","豆花肉片盖饭","西校区","颐园二食堂（颐二）",15,15,"/份","fixed","主食",["香辣","肉食"],"photo-1546833999-b9f581a1996d"),
+      makeDish("w-yiyuaner-mala-pot","麻辣香锅","西校区","颐园二食堂（颐二）",1.5,1.5,"/两","weight","火锅麻辣烫",["香辣"],"photo-1547592180-85f173990554",{budgetable:false,note:"按两计价，清单未提供一份的重量和总价，不参与预算抽取。"}),
+      makeDish("w-yiyuaner-seafoodnoodle","海鲜米线","西校区","颐园二食堂（颐二）",12,12,"/份","fixed","面食",["肉食"],"photo-1569718212165-3a8278d5f624"),
+      makeDish("w-yiyuaner-mala-mix","麻辣拌","西校区","颐园二食堂（颐二）",15.8,15.8,"/份","reference","火锅麻辣烫",["香辣"],"photo-1547592180-85f173990554",{note:"此价为校外人员参考价，校园人员实际价格待核实。",budgetable:false}),
+      makeDish("w-yiyuan-rest-couples","夫妻肺片","西校区","颐园餐厅（对外餐厅）",null,null,"","unknown","家常菜",["香辣","肉食"],"photo-1547592180-85f173990554",{area:"对外餐厅"}),
+      makeDish("w-yiyuan-rest-stone-rice","石锅拌饭","西校区","颐园餐厅（对外餐厅）",null,null,"","unknown","主食",["肉食"],"photo-1546833999-b9f581a1996d",{area:"对外餐厅"}),
+      makeDish("w-yiyuan-rest-mala-pot","麻辣香锅","西校区","颐园餐厅（对外餐厅）",null,null,"","unknown","火锅麻辣烫",["香辣"],"photo-1547592180-85f173990554",{area:"对外餐厅"}),
+      makeDish("w-yiyuan-rest-pea-beef","鲜豌豆牛柳","西校区","颐园餐厅（对外餐厅）",null,null,"","unknown","家常菜",["肉食"],"photo-1546833999-b9f581a1996d",{area:"对外餐厅"}),
+      makeDish("w-yiyuan-rest-grill","香烤肉","西校区","颐园餐厅（对外餐厅）",null,null,"","unknown","家常菜",["肉食"],"photo-1547592180-85f173990554",{area:"对外餐厅"}),
+      makeDish("w-yiyuan-rest-kimchi-rice","辣白菜拌饭","西校区","颐园餐厅（对外餐厅）",null,null,"","unknown","主食",["香辣"],"photo-1546833999-b9f581a1996d",{area:"对外餐厅"}),
+      makeDish("w-yiyuan-rest-dumplings","二楼水饺","西校区","颐园餐厅（对外餐厅）",null,null,"","unknown","主食",["肉食"],"photo-1563245372-f21724e3856d",{area:"对外餐厅"}),
+      makeDish("w-yiyuan-rest-mushroom","金沙茶树菇","西校区","颐园餐厅（对外餐厅）",null,null,"","unknown","家常菜",["素食"],"photo-1512621776951-a57141f2eefd",{area:"对外餐厅"}),
+      makeDish("w-yiyuan-rest-mutton","葱爆羊肉","西校区","颐园餐厅（对外餐厅）",null,null,"","unknown","家常菜",["肉食"],"photo-1547592180-85f173990554",{area:"对外餐厅"}),
+      makeDish("w-yiyuan-rest-potato-beef","小土豆炖牛肉","西校区","颐园餐厅（对外餐厅）",null,null,"","unknown","家常菜",["肉食"],"photo-1546833999-b9f581a1996d",{area:"对外餐厅"}),
+      makeDish("w-yiyuan-rest-casserole-noodle","砂锅米线","西校区","颐园餐厅（对外餐厅）",null,null,"","unknown","面食",["香辣"],"photo-1569718212165-3a8278d5f624",{area:"对外餐厅"}),
+      makeDish("w-heyuan1-noodles","各色面食","西校区","和园一食堂",null,null,"","unknown","面食",["肉食"],"photo-1569718212165-3a8278d5f624"),
+      makeDish("w-heyuan1-rice-noodles","米线","西校区","和园一食堂",null,null,"","unknown","面食",["香辣"],"photo-1569718212165-3a8278d5f624"),
+      makeDish("w-heyuan1-homestyle","家常菜","西校区","和园一食堂",null,null,"","unknown","家常菜",["肉食"],"photo-1547592180-85f173990554"),
+      makeDish("w-heyuan1-rice-roll","肠粉","西校区","和园一食堂",null,null,"","unknown","小吃",["清淡"],"photo-1565299624946-b28f40a0ae38"),
+      makeDish("w-heyuan2-malatang","天水麻辣烫","西校区","和园二食堂",null,null,"","unknown","火锅麻辣烫",["香辣"],"photo-1547592180-85f173990554"),
+      makeDish("w-heyuan2-homestyle","家常菜","西校区","和园二食堂",null,null,"","unknown","家常菜",["肉食"],"photo-1547592180-85f173990554"),
+      makeDish("common-breakfast-combo","早餐组合（韭菜盒子+油条+豆浆）","校区未注明","其他价格参考",3.5,3.5,"/套","fixed","套餐",["素食"],"photo-1565299624946-b28f40a0ae38"),
+      makeDish("common-lunch-pork-rice","午餐小炒肉盖饭","校区未注明","其他价格参考",16,16,"/份","fixed","主食",["香辣","肉食"],"photo-1546833999-b9f581a1996d"),
+      makeDish("common-dinner-wonton-noodle","晚餐云吞面","校区未注明","其他价格参考",14,14,"/份","fixed","面食",["清淡","肉食"],"photo-1569718212165-3a8278d5f624"),
+      makeDish("common-meal-combo","脆皮鸡/麻辣烫/炒饭炒面套餐","校区未注明","其他价格参考",8,15,"/份","reference","套餐",["香辣","肉食"],"photo-1547592180-85f173990554",{note:"清单给出8–15元参考范围，未标明校区与各单品对应价，暂不参与抽取。",budgetable:false}),
+      makeDish("ref-heyuan1-average","和园一食堂人均参考","校区未注明","食堂人均参考",14,14,"/人","reference","餐厅参考",[],"photo-1546833999-b9f581a1996d",{note:"人均参考，不是单道菜价格，不参与抽取。",budgetable:false}),
+      makeDish("ref-yiyuan-restaurant-average","颐园餐厅人均参考","西校区","颐园餐厅（对外餐厅）",23,23,"/人","reference","餐厅参考",[],"photo-1547592180-85f173990554",{note:"餐厅人均参考，不是单道菜价格，不参与抽取。",area:"对外餐厅",visitorFee:false,budgetable:false}),
+      makeDish("ref-heyuan2-two-meat-two-veg","二荤二素套餐（上庄参考）","校区未注明","和园二食堂 · 上庄实验站参考价",23,23,"/份","reference","套餐",["肉食"],"photo-1546833999-b9f581a1996d",{note:"来源标注为上庄实验站参考价，并非农大校区确认价，不参与抽取。",budgetable:false}),
+      makeDish("ref-heyuan2-two-meat-one-veg","二荤一素套餐（上庄参考）","校区未注明","和园二食堂 · 上庄实验站参考价",20,20,"/份","reference","套餐",["肉食"],"photo-1546833999-b9f581a1996d",{note:"来源标注为上庄实验站参考价，并非农大校区确认价，不参与抽取。",budgetable:false}),
+      makeDish("ref-heyuan2-one-meat-two-veg","一荤两素套餐（上庄参考）","校区未注明","和园二食堂 · 上庄实验站参考价",17,17,"/份","reference","套餐",["肉食"],"photo-1546833999-b9f581a1996d",{note:"来源标注为上庄实验站参考价，并非农大校区确认价，不参与抽取。",budgetable:false}),
+      makeDish("ref-heyuan2-one-meat-one-veg","一荤一素套餐（上庄参考）","校区未注明","和园二食堂 · 上庄实验站参考价",13,13,"/份","reference","套餐",["肉食"],"photo-1546833999-b9f581a1996d",{note:"来源标注为上庄实验站参考价，并非农大校区确认价，不参与抽取。",budgetable:false}),
+      makeDish("ref-heyuan2-two-veg","两素套餐（上庄参考）","校区未注明","和园二食堂 · 上庄实验站参考价",10,10,"/份","reference","套餐",["素食"],"photo-1512621776951-a57141f2eefd",{note:"来源标注为上庄实验站参考价，并非农大校区确认价，不参与抽取。",budgetable:false})
     ];
 
     let stored = loadState();
     let currentCampus = stored.campus || "西校区";
     let activeDish = null;
+    let currentRecommendation = null;
+    let currentRecommendationAccepted = false;
+    let lastRecommendationId = null;
     let toastTimer;
     const $ = (id) => document.getElementById(id);
     const dishesForCampus = () => seedDishes.filter((dish) => dish.campus === currentCampus);
+    const unassignedDishes = () => seedDishes.filter((dish) => dish.campus === "校区未注明");
     const safeText = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
     const screens = [...document.querySelectorAll(".screen")];
     let activeScreenIndex = 0;
@@ -424,14 +574,22 @@
     function loadState() {
       try {
         const value = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+        const metrics = value.metrics && typeof value.metrics === "object" ? value.metrics : {};
         return {
           campus: value.campus,
           ratings: value.ratings && typeof value.ratings === "object" ? value.ratings : {},
-          reviews: Array.isArray(value.reviews) ? value.reviews : []
+          reviews: Array.isArray(value.reviews) ? value.reviews : [],
+          feedback: Array.isArray(value.feedback) ? value.feedback : [],
+          metrics: {
+            draws: Number.isInteger(metrics.draws) && metrics.draws >= 0 ? metrics.draws : 0,
+            accepted: Number.isInteger(metrics.accepted) && metrics.accepted >= 0 ? metrics.accepted : 0,
+            rerolls: Number.isInteger(metrics.rerolls) && metrics.rerolls >= 0 ? metrics.rerolls : 0,
+            activeDays: Array.isArray(metrics.activeDays) ? [...new Set(metrics.activeDays.filter((day) => /^\d{4}-\d{2}-\d{2}$/.test(day)))].slice(-365) : []
+          }
         };
       } catch (error) {
         console.error("Could not read saved food guide data.", error);
-        return { ratings: {}, reviews: [] };
+        return { ratings: {}, reviews: [], feedback: [], metrics: { draws: 0, accepted: 0, rerolls: 0 } };
       }
     }
     function saveState() {
@@ -450,26 +608,80 @@
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => toast.classList.remove("show"), 2100);
     }
+    function clearRecommendation(message = "设置条件，抽一个今天的美味。") {
+      currentRecommendation = null;
+      currentRecommendationAccepted = false;
+      const result = $("lotteryResult");
+      result.classList.add("is-empty");
+      result.innerHTML = `<div style="font-size:42px">🥢</div><strong>准备好把选择交给运气了吗？</strong><span style="font-size:13px;margin-top:8px">${safeText(message)}</span>`;
+    }
     function getScore(dish) {
       const personal = stored.ratings[dish.id];
-      if (!personal) return { score: dish.rating, count: dish.votes };
-      return { score: ((dish.rating * dish.votes + personal) / (dish.votes + 1)), count: dish.votes + 1 };
+      return { score: Number.isFinite(personal) ? personal : dish.rating, isPersonal: Number.isFinite(personal) };
+    }
+    function priceLabel(dish) {
+      if (dish.priceType === "unknown" || !Number.isFinite(dish.priceMax)) return "价格待补";
+      const unit = dish.priceUnit || "";
+      if (dish.priceType === "cap") return `≤¥${dish.priceMax}${unit}`;
+      if (dish.priceType === "weight") return `¥${dish.priceMax}${unit}`;
+      if (dish.priceType === "reference") return `约¥${dish.priceMax}${unit}`;
+      if (dish.priceMin !== dish.priceMax) return `约¥${dish.priceMin}–${dish.priceMax}${unit}`;
+      return `¥${dish.priceMax}${unit}`;
+    }
+    function caloriesFor(dish) {
+      if (dish.calories && Number.isFinite(dish.calories.min) && Number.isFinite(dish.calories.max)) return dish.calories;
+      const estimates = {
+        "主食": { min: 450, max: 850 },
+        "面食": { min: 400, max: 750 },
+        "家常菜": { min: 180, max: 650 },
+        "小吃": { min: 120, max: 500 },
+        "轻食": { min: 300, max: 700 },
+        "饮品甜品": { min: 100, max: 450 },
+        "火锅麻辣烫": { min: 250, max: 900 },
+        "套餐": { min: 450, max: 950 }
+      };
+      return estimates[dish.category] || null;
+    }
+    function calorieLabel(dish) {
+      const estimate = caloriesFor(dish);
+      return estimate ? `约${estimate.min}–${estimate.max} 千卡/份` : "暂缺可靠估算";
+    }
+    function budgetPrice(dish) {
+      if (!dish.budgetable || !Number.isFinite(dish.budgetMax)) return null;
+      const visitorEstimate = $("dinerType")?.value === "visitor" && dish.visitorFee && dish.area !== "对外餐厅";
+      return dish.budgetMax * (visitorEstimate ? 1.2 : 1);
+    }
+    function formatBudgetPrice(dish) {
+      const visitorEstimate = $("dinerType").value === "visitor" && dish.visitorFee && dish.area !== "对外餐厅";
+      const upper = budgetPrice(dish);
+      if (!Number.isFinite(upper)) return "预算不可比";
+      const amount = Number.isInteger(upper) ? upper : Number(upper.toFixed(2));
+      const suffix = visitorEstimate ? "（含约20%估算）" : "";
+      return dish.priceType === "approx" || dish.priceType === "cap" || visitorEstimate
+        ? `预算按≤¥${amount}${dish.priceUnit}${suffix}`
+        : `预算按¥${amount}${dish.priceUnit}${suffix}`;
     }
     function cardMarkup(dish) {
       const rating = getScore(dish);
+      const ratingMarkup = rating.score === null
+        ? "暂无学生评分"
+        : `<strong>★ ${rating.score.toFixed(1)}</strong> · ${rating.isPersonal ? "我的评分" : "学生评分"}`;
       return `<article class="dish-card">
         <img class="dish-photo" src="${dish.photo}" alt="${safeText(dish.name)}" loading="lazy">
         <div class="dish-content">
-          <div class="dish-topline"><h3 class="dish-title">${safeText(dish.name)}</h3><span class="price">¥${dish.price}</span></div>
+          <div class="dish-topline"><h3 class="dish-title">${safeText(dish.name)}</h3><span class="price">${safeText(priceLabel(dish))}</span></div>
           <div class="dish-place">${safeText(dish.place)}</div>
-          <div class="dish-bottom"><span class="rating-line"><strong>★ ${rating.score.toFixed(1)}</strong> · ${rating.count} 人尝过</span><button class="detail-button" type="button" data-open="${dish.id}">看详情 ↗</button></div>
-          <span class="tag">${safeText(dish.category)} · ${safeText(dish.taste[0])}</span>
+          ${dish.note ? `<div class="price-note">${safeText(dish.note)}</div>` : ""}
+          <div class="dish-bottom"><span class="rating-line">${ratingMarkup}</span><button class="detail-button" type="button" data-open="${dish.id}">看详情 ↗</button></div>
+          <span class="tag">${safeText(dish.category)}${dish.taste.length ? ` · ${safeText(dish.taste[0])}` : ""}</span>
+          <span class="sample-badge">${safeText(dish.dataStatus)}</span>
+          <div class="source-line">来源：${safeText(dish.source)}</div>
         </div>
       </article>`;
     }
     function render() {
       const campusDishes = dishesForCampus();
-      const scoreSorted = [...campusDishes].sort((a, b) => getScore(b).score - getScore(a).score);
+      const scoreSorted = [...campusDishes].sort((a, b) => (getScore(b).score ?? -1) - (getScore(a).score ?? -1));
       $("featuredGrid").innerHTML = scoreSorted.slice(0, 3).map(cardMarkup).join("");
       const query = $("searchInput").value.trim().toLowerCase();
       const category = $("categoryFilter").value;
@@ -478,18 +690,31 @@
       let filtered = campusDishes.filter((dish) => {
         const matchesQuery = !query || `${dish.name} ${dish.place} ${dish.category}`.toLowerCase().includes(query);
         const matchesCategory = !category || dish.category === category;
-        const matchesPrice = !price || (price === "15" ? dish.price <= 15 : price === "30" ? dish.price > 15 && dish.price <= 30 : dish.price > 30);
+        const hasComparablePrice = Number.isFinite(dish.priceMax);
+        const matchesPrice = !price || (hasComparablePrice && (price === "15" ? dish.priceMax <= 15 : price === "30" ? dish.priceMax > 15 && dish.priceMax <= 30 : dish.priceMax > 30));
         return matchesQuery && matchesCategory && matchesPrice;
       });
-      if (sort === "rating") filtered.sort((a, b) => getScore(b).score - getScore(a).score);
-      if (sort === "price") filtered.sort((a, b) => a.price - b.price);
-      if (sort === "popular") filtered.sort((a, b) => getScore(b).count - getScore(a).count);
+      if (sort === "rating") filtered.sort((a, b) => (getScore(b).score ?? -1) - (getScore(a).score ?? -1));
+      if (sort === "price") filtered.sort((a, b) => {
+        const priceA = Number.isFinite(a.priceMax) ? a.priceMax : Number.POSITIVE_INFINITY;
+        const priceB = Number.isFinite(b.priceMax) ? b.priceMax : Number.POSITIVE_INFINITY;
+        return priceA - priceB;
+      });
+      if (sort === "popular") filtered.sort((a, b) => Number.isFinite(b.rating) - Number.isFinite(a.rating) || (b.votes || 0) - (a.votes || 0));
       $("dishGrid").innerHTML = filtered.length ? filtered.map(cardMarkup).join("") : `<div class="empty">没有找到符合条件的菜品，试试调整筛选条件吧。</div>`;
+      const unassigned = unassignedDishes().filter((dish) =>
+        (!query || `${dish.name} ${dish.place} ${dish.category}`.toLowerCase().includes(query)) &&
+        (!category || dish.category === category)
+      );
+      $("unassignedGrid").innerHTML = unassigned.length ? unassigned.map(cardMarkup).join("") : `<div class="empty">没有校区待确认的匹配条目。</div>`;
       $("dishCount").textContent = campusDishes.length;
       $("campusLabel").textContent = currentCampus;
       $("reviewCount").textContent = stored.reviews.length;
-      $("reviewDishSelect").innerHTML = campusDishes.map((dish) => `<option value="${dish.id}">${safeText(dish.name)}</option>`).join("");
+      $("reviewDishSelect").innerHTML = seedDishes.map((dish) => `<option value="${dish.id}">${safeText(dish.campus)} · ${safeText(dish.name)}</option>`).join("");
+      $("feedbackDishSelect").innerHTML = seedDishes.map((dish) => `<option value="${dish.id}">${safeText(dish.campus)} · ${safeText(dish.name)}</option>`).join("");
       renderReviews();
+      renderFeedback();
+      renderMetrics();
     }
     function renderReviews(dishId) {
       const reviews = stored.reviews.filter((review) => !dishId || review.dishId === dishId);
@@ -501,6 +726,23 @@
         return `<div class="review-item"><div class="review-meta"><span>${safeText(review.nickname || "匿名同学")} · <span class="review-dish">${safeText(dish ? dish.name : "菜品")}</span></span><time>${new Date(review.createdAt).toLocaleDateString("zh-CN")}</time></div><p>${safeText(review.text)}</p></div>`;
       }).join("") : `<p class="form-note">${dishId ? "还没有同学评价，来写第一条吧。" : "还没有同学评价，来分享你的第一口体验吧。"}</p>`;
     }
+    function renderMetrics() {
+      const { draws, accepted, rerolls, activeDays } = stored.metrics;
+      $("drawMetric").textContent = draws;
+      $("acceptMetric").textContent = accepted;
+      $("rerollMetric").textContent = rerolls;
+      $("acceptRateMetric").textContent = draws ? `${Math.round(accepted / draws * 100)}%` : "—";
+      $("activeDayMetric").textContent = activeDays.length;
+    }
+    function renderFeedback() {
+      const target = $("feedbackList");
+      if (!target) return;
+      const entries = stored.feedback.slice().reverse().slice(0, 10);
+      target.innerHTML = entries.length ? entries.map((entry) => {
+        const dish = seedDishes.find((item) => item.id === entry.dishId);
+        return `<div class="review-item"><div class="review-meta"><span>${safeText(entry.type)} · ${safeText(dish ? dish.name : "菜品")}</span><time>${new Date(entry.createdAt).toLocaleDateString("zh-CN")}</time></div><p>${safeText(entry.detail)}</p></div>`;
+      }).join("") : `<p class="form-note">还没有反馈记录。反馈目前只保存在本机。</p>`;
+    }
     function openDish(dishId) {
       const dish = seedDishes.find((item) => item.id === dishId);
       if (!dish) return;
@@ -508,9 +750,11 @@
       const rating = getScore(dish);
       $("modalContent").innerHTML = `<div class="modal-head"><h2 id="modalTitle">${safeText(dish.name)}</h2><button class="close-button" type="button" data-close aria-label="关闭">×</button></div>
         <img class="modal-photo" src="${dish.photo}" alt="${safeText(dish.name)}">
-        <p class="dish-place">${safeText(dish.place)} · ¥${dish.price} · ${safeText(dish.category)}</p>
+        <p class="dish-place">${safeText(dish.place)} · ${safeText(priceLabel(dish))} · ${safeText(dish.category)}</p>
         <p>${safeText(dish.desc)}</p>
-        <div class="modal-rating"><span>同学评分 <strong>${rating.score.toFixed(1)}</strong> / 5</span><span>给它打分：</span><span class="stars" aria-label="五星评分，可评半星">${[1, 2, 3, 4, 5].map((star) => {
+        <div class="data-notice">菜品与价格来自用户提供的清单，尚未独立核实；供应状态待确认，页面配图仅为氛围图。${dish.note ? ` ${safeText(dish.note)}` : ""}</div>
+        <p class="form-note">来源：${safeText(dish.source)}；最近核实：${dish.verifiedAt ? safeText(dish.verifiedAt) : "尚未核实"}。</p>
+        <div class="modal-rating"><span>${rating.score === null ? "暂无学生评分" : `${rating.isPersonal ? "我的评分" : "学生评分"} ${rating.score.toFixed(1)} / 5`}</span><span>给它打分：</span><span class="stars" aria-label="五星评分，可评半星">${[1, 2, 3, 4, 5].map((star) => {
           const personal = stored.ratings[dish.id] || 0;
           const fill = personal >= star ? "100%" : personal === star - 0.5 ? "50%" : "0%";
           return `<button class="star-button" style="--fill:${fill}" type="button" data-rate="${star}" aria-label="${star - 0.5} 到 ${star} 星">★</button>`;
@@ -519,42 +763,79 @@
       renderReviews(dish.id);
       $("dishDialog").showModal();
     }
-    function drawDish() {
-      let candidates = dishesForCampus();
+    function drawDish(isReroll = false) {
+      let candidates = dishesForCampus().filter((dish) =>
+        dish.budgetable && Number.isFinite(budgetPrice(dish)) && dish.availability !== "已下架"
+      );
       const budget = $("budgetSelect").value;
       const custom = Number($("customBudget").value);
       const taste = $("tasteSelect").value;
       const category = $("lotteryCategory").value;
-      if (budget === "15") candidates = candidates.filter((dish) => dish.price <= 15);
-      else if (budget === "30") candidates = candidates.filter((dish) => dish.price > 15 && dish.price <= 30);
-      else if (budget === "31") candidates = candidates.filter((dish) => dish.price > 30);
+      if (budget === "15") candidates = candidates.filter((dish) => budgetPrice(dish) <= 15);
+      else if (budget === "30") candidates = candidates.filter((dish) => budgetPrice(dish) > 15 && budgetPrice(dish) <= 30);
+      else if (budget === "31") candidates = candidates.filter((dish) => budgetPrice(dish) > 30);
       else if (budget === "custom") {
         if (!custom || custom < 1) { showToast("请填写有效的自定义预算"); $("customBudget").focus(); return; }
-        candidates = candidates.filter((dish) => dish.price <= custom);
+        candidates = candidates.filter((dish) => budgetPrice(dish) <= custom);
       }
       if (taste) candidates = candidates.filter((dish) => dish.taste.includes(taste));
       if (category) candidates = candidates.filter((dish) => dish.category === category);
+      if (isReroll) {
+        stored.metrics.rerolls += 1;
+        saveState();
+      }
       const result = $("lotteryResult");
       if (!candidates.length) {
         result.classList.add("is-empty");
-        result.innerHTML = `<div style="font-size:38px">🤔</div><strong>这个条件下暂时没找到菜</strong><span style="font-size:13px;margin-top:8px">放宽预算或换个口味，再试一次吧。</span>`;
+        currentRecommendation = null;
+        currentRecommendationAccepted = false;
+        result.innerHTML = `<div style="font-size:38px">🤔</div><strong>这个条件下暂时没找到可抽的菜</strong><span style="font-size:13px;margin-top:8px">请放宽校区、预算或口味；价格未知、已下架的菜不会入选。</span>`;
+        renderMetrics();
         return;
       }
-      const dish = candidates[Math.floor(Math.random() * candidates.length)];
+      const alternatives = lastRecommendationId
+        ? candidates.filter((dish) => dish.id !== lastRecommendationId)
+        : candidates;
+      const drawPool = alternatives.length ? alternatives : candidates;
+      const dish = drawPool[Math.floor(Math.random() * drawPool.length)];
+      currentRecommendation = dish;
+      currentRecommendationAccepted = false;
+      lastRecommendationId = dish.id;
+      stored.metrics.draws += 1;
+      const date = new Date();
+      const today = [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
+      if (!stored.metrics.activeDays.includes(today)) stored.metrics.activeDays.push(today);
       result.classList.remove("is-empty");
-      result.innerHTML = `<div class="result-label">今天就吃这个！</div><div class="result-dish"><img src="${dish.photo}" alt="${safeText(dish.name)}"><div><span class="tag">${safeText(dish.campus)} · ${safeText(dish.category)}</span><h3>${safeText(dish.name)}</h3><div class="dish-place">${safeText(dish.place)}</div><div class="rating-line"><strong>★ ${getScore(dish).score.toFixed(1)}</strong> · ¥${dish.price}</div></div></div><div class="result-actions"><button class="button" type="button" data-open="${dish.id}">看看菜品详情</button><button class="button secondary" type="button" id="redrawButton">再抽一次</button></div>`;
-      $("redrawButton").addEventListener("click", drawDish);
+      const repeatNotice = candidates.length === 1 ? "当前筛选只有这一道菜可选；继续抽取可能会再次出现。" : "";
+      const rating = getScore(dish);
+      result.innerHTML = `<div class="result-label">今天就吃这个？</div><div class="result-dish"><img src="${dish.photo}" alt="${safeText(dish.name)}"><div><span class="tag">${safeText(dish.campus)} · ${safeText(dish.category)}</span><h3>${safeText(dish.name)}</h3><div class="dish-place">${safeText(dish.place)}</div><div class="rating-line">${rating.score === null ? "暂无学生评分" : `★ ${rating.score.toFixed(1)}`} · ${safeText(priceLabel(dish))}</div><div class="rating-line">${safeText(formatBudgetPrice(dish))}</div></div></div><div class="calorie-card"><span class="calorie-icon" aria-hidden="true">🔥</span><div><strong>本次推荐热量：${safeText(calorieLabel(dish))}</strong><span>按当前推荐单品及常见单人份粗略估算，非实测值；若搭配其他菜品，整顿饭的实际热量会更高。</span></div></div><p class="form-note">价格来自用户提供清单，供应状态待确认。${repeatNotice ? ` ${repeatNotice}` : ""}</p><div class="result-actions"><button class="button" type="button" data-accept="${dish.id}">就选它，记为接受</button><button class="button secondary" type="button" data-reroll>换一个</button><button class="detail-button" type="button" data-open="${dish.id}">查看详情</button></div><div class="result-status" id="resultStatus" aria-live="polite"></div>`;
+      saveState();
+      renderMetrics();
     }
 
     $("campusSelect").value = currentCampus;
     $("campusSelect").addEventListener("change", (event) => {
       currentCampus = event.target.value;
       stored.campus = currentCampus;
+      lastRecommendationId = null;
+      clearRecommendation("校区已切换，请按新校区重新抽取。");
       saveState();
       render();
     });
+    ["budgetSelect", "tasteSelect", "lotteryCategory", "dinerType"].forEach((id) =>
+      $(id).addEventListener("change", () => clearRecommendation("筛选条件已更新，请重新抽取。"))
+    );
+    $("customBudget").addEventListener("input", () => {
+      if ($("budgetSelect").value === "custom") clearRecommendation("预算已更新，请重新抽取。");
+    });
     ["searchInput", "categoryFilter", "priceFilter", "sortFilter"].forEach((id) => $(id).addEventListener(id === "searchInput" ? "input" : "change", render));
-    $("drawButton").addEventListener("click", drawDish);
+    $("drawButton").addEventListener("click", () => drawDish(false));
+    $("budgetSelect").addEventListener("change", () => {
+      const customBudget = $("budgetSelect").value === "custom";
+      $("customBudget").disabled = !customBudget;
+      $("customBudget").setAttribute("aria-label", customBudget ? "输入自定义最高预算" : "请先选择自定义上限");
+      if (!customBudget) $("customBudget").value = "";
+    });
     $("reviewForm").addEventListener("submit", (event) => {
       event.preventDefault();
       const dishId = $("reviewDishSelect").value;
@@ -565,6 +846,26 @@
       $("reviewText").value = "";
       render();
       showToast("评价已发布并保存");
+    });
+    $("feedbackForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const dishId = $("feedbackDishSelect").value;
+      const detail = $("feedbackDetail").value.trim();
+      if (!seedDishes.some((dish) => dish.id === dishId) || !detail) {
+        showToast("请选择菜品并补充问题说明");
+        return;
+      }
+      stored.feedback.push({
+        dishId,
+        type: $("feedbackType").value,
+        detail,
+        campus: seedDishes.find((dish) => dish.id === dishId).campus,
+        createdAt: new Date().toISOString()
+      });
+      saveState();
+      $("feedbackDetail").value = "";
+      renderFeedback();
+      showToast("反馈已记在本机浏览器；尚未发送给维护者");
     });
     document.addEventListener("click", (event) => {
       const openButton = event.target.closest("[data-open]");
@@ -579,6 +880,17 @@
         openDish(activeDish.id);
         render();
         showToast("评分已保存，可以再次修改");
+      }
+      const rerollButton = event.target.closest("[data-reroll]");
+      if (rerollButton) drawDish(true);
+      const acceptButton = event.target.closest("[data-accept]");
+      if (acceptButton && currentRecommendation?.id === acceptButton.dataset.accept && !currentRecommendationAccepted) {
+        currentRecommendationAccepted = true;
+        stored.metrics.accepted += 1;
+        saveState();
+        acceptButton.disabled = true;
+        $("resultStatus").textContent = "已记录为接受（仅本机测试数据）；请先核实示例菜品信息。";
+        renderMetrics();
       }
     });
     $("dishDialog").addEventListener("click", (event) => {
@@ -628,6 +940,7 @@
     });
     const initialTarget = document.getElementById(decodeURIComponent(location.hash.slice(1)));
     goToScreen(initialTarget && initialTarget.closest(".screen") ? initialTarget.closest(".screen").id : "home");
+    $("customBudget").disabled = $("budgetSelect").value !== "custom";
     render();
   </script>
 </body>
